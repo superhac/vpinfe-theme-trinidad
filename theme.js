@@ -140,10 +140,7 @@ function clearAttractTimers() {
 
 function stopAttractMode() {
     attractModeActive = false;
-    if (attractAdvanceTimer) {
-        window.clearTimeout(attractAdvanceTimer);
-        attractAdvanceTimer = null;
-    }
+    clearAttractTimers();
 }
 
 function shouldPauseAttractMode() {
