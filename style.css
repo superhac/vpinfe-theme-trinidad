@@ -244,6 +244,42 @@ body.window-table .wheel-card-fallback {
   object-fit: contain;
 }
 
+body.window-table.collection-wheel-mode .wheel-card {
+  aspect-ratio: 1 / 1;
+  width: 23vw;
+  max-width: 30vh;
+  min-width: 20vh;
+}
+
+body.window-table.collection-wheel-mode .wheel-card.is-selected {
+  filter:
+    drop-shadow(0 0 2.2vh rgba(47, 210, 255, 1))
+    drop-shadow(0 1.1vh 2vh rgba(0, 0, 0, 0.8));
+}
+
+body.window-table.collection-wheel-mode .wheel-card-shell {
+  display: grid;
+  place-items: center;
+}
+
+body.window-table.collection-wheel-mode .wheel-card img {
+  width: auto;
+  height: auto;
+  max-width: 72%;
+  max-height: 72%;
+  object-fit: contain;
+}
+
+body.window-table.collection-wheel-mode .wheel-card-fallback {
+  border: 0.2vh solid rgba(47, 210, 255, 0.72);
+  border-radius: 1.4vh;
+  background: rgba(3, 9, 18, 0.84);
+  color: #e8fbff;
+  padding: 1.4vh;
+  text-align: center;
+  box-shadow: 0 0 2vh rgba(47, 210, 255, 0.24);
+}
+
 body.window-table .wheel-card-shell {
   width: 100%;
   height: 100%;

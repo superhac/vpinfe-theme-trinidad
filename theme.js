@@ -5,6 +5,9 @@ let vpinPlayRatingToken = 0;
 let attractIdleTimer = null;
 let attractAdvanceTimer = null;
 let attractModeActive = false;
+let wheelMode = "tables";
+let collectionEntries = [];
+let currentCollectionIndex = 0;
 
 const ATTRACT_IDLE_MS = 60000;
 const ATTRACT_STEP_MS = 7000;
@@ -143,9 +146,14 @@ function stopAttractMode() {
     clearAttractTimers();
 }
 
+function isCollectionMode() {
+    return wheelMode === "collections";
+}
+
 function shouldPauseAttractMode() {
     return (
         windowName !== "table" ||
+        isCollectionMode() ||
         !vpin.tableData ||
         vpin.tableData.length < 2 ||
         vpin.menuUP ||
@@ -436,6 +444,28 @@ function getDisplayData(index) {
     };
 }
 
+function getCollectionDisplayData(index) {
+    const collection = collectionEntries[index] || {};
+    const tableCount = Number(collection.table_count);
+    const countText = Number.isFinite(tableCount)
+        ? `${tableCount} ${tableCount === 1 ? "Table" : "Tables"}`
+        : (collection.is_filter ? "Filter Collection" : "Collection");
+
+    return {
+        title: collection.name || "Collection",
+        authors: countText,
+        manufacturer: collection.type === "filter" ? "Filter" : "Collection",
+        year: "",
+        type: countText,
+        ratingStars: "",
+        runtimeText: "",
+        startCountText: "",
+        filename: collection.name || "",
+        wheelUrl: collection.image_url || "",
+        collection
+    };
+}
+
 function coalesce(...values) {
     for (const value of values) {
         if (value !== undefined && value !== null && value !== "") {
@@ -602,11 +632,52 @@ function updateTableMeta(data) {
     }
 }
 
+function updateCollectionMeta(data) {
+    const panelEl = document.querySelector(".table-meta-panel");
+    const titleEl = document.getElementById("tableTitle");
+    const authorsEl = document.getElementById("tableAuthors");
+    const manufacturerEl = document.getElementById("tableManufacturer");
+    const yearEl = document.getElementById("tableYear");
+    const typeEl = document.getElementById("tableType");
+    const ratingEl = document.getElementById("tableRating");
+    const vpinPlayEl = document.getElementById("tableVPinPlayRating");
+    const runtimeEl = document.getElementById("tableRuntime");
+    const startCountEl = document.getElementById("tableStartCount");
+
+    if (!titleEl) {
+        return;
+    }
+
+    titleEl.textContent = data.title;
+    authorsEl.textContent = data.authors;
+    manufacturerEl.textContent = data.manufacturer;
+    yearEl.textContent = data.year;
+    typeEl.textContent = data.type;
+    ratingEl.textContent = "";
+    if (vpinPlayEl) {
+        vpinPlayEl.textContent = "";
+        vpinPlayEl.removeAttribute("title");
+    }
+    runtimeEl.textContent = "";
+    startCountEl.textContent = "";
+
+    if (panelEl) {
+        panelEl.classList.remove("is-entering");
+        void panelEl.offsetWidth;
+        panelEl.classList.add("is-entering");
+        window.setTimeout(() => {
+            panelEl.classList.remove("is-entering");
+        }, 380);
+    }
+}
+
 function buildWheelCard(index, offset) {
-    const data = getDisplayData(index);
+    const data = isCollectionMode() ? getCollectionDisplayData(index) : getDisplayData(index);
     const card = document.createElement("div");
     card.className = "wheel-card";
+    card.dataset.itemIndex = String(index);
     card.dataset.tableIndex = String(index);
+    card.classList.toggle("is-collection-card", isCollectionMode());
 
     const shell = document.createElement("div");
     shell.className = "wheel-card-shell";
@@ -643,14 +714,16 @@ function getCircularDelta(nextIndex, previousIndex, length) {
 
 function renderWheelCarousel(options = {}) {
     const carousel = document.getElementById("wheelCarousel");
-    if (!carousel || !vpin.tableData?.length) {
+    const itemCount = isCollectionMode() ? collectionEntries.length : (vpin.tableData?.length || 0);
+    const currentIndex = isCollectionMode() ? currentCollectionIndex : currentTableIndex;
+    if (!carousel || !itemCount) {
         return;
     }
 
     const offsets = [-3, -2, -1, 0, 1, 2, 3];
     const nextVisible = offsets.map((offset) => ({
         offset,
-        index: wrapIndex(currentTableIndex + offset, vpin.tableData.length)
+        index: wrapIndex(currentIndex + offset, itemCount)
     }));
 
     if (options.animate === false || renderedWheelCenterIndex === null || !carousel.children.length) {
@@ -661,18 +734,18 @@ function renderWheelCarousel(options = {}) {
         });
 
         carousel.replaceChildren(fragment);
-        renderedWheelCenterIndex = currentTableIndex;
+        renderedWheelCenterIndex = currentIndex;
         return;
     }
 
-    const delta = getCircularDelta(currentTableIndex, renderedWheelCenterIndex, vpin.tableData.length);
+    const delta = getCircularDelta(currentIndex, renderedWheelCenterIndex, itemCount);
     if (Math.abs(delta) !== 1) {
         renderWheelCarousel({ animate: false });
         return;
     }
 
     const cardsByIndex = new Map(
-        Array.from(carousel.children).map((card) => [Number(card.dataset.tableIndex), card])
+        Array.from(carousel.children).map((card) => [Number(card.dataset.itemIndex), card])
     );
     const nextIndexSet = new Set(nextVisible.map(({ index }) => index));
     const enteringOffset = delta > 0 ? 3 : -3;
@@ -688,6 +761,7 @@ function renderWheelCarousel(options = {}) {
         }
 
         card.dataset.tableIndex = String(index);
+        card.dataset.itemIndex = String(index);
         if (offset === enteringOffset && !cardsByIndex.has(index)) {
             applyWheelCardLayout(card, enteringStartOffset);
             requestAnimationFrame(() => applyWheelCardLayout(card, offset));
@@ -697,20 +771,76 @@ function renderWheelCarousel(options = {}) {
     });
 
     Array.from(carousel.children).forEach((card) => {
-        const index = Number(card.dataset.tableIndex);
+        const index = Number(card.dataset.itemIndex);
         if (nextIndexSet.has(index)) {
             return;
         }
 
         applyWheelCardLayout(card, exitingTargetOffset);
         window.setTimeout(() => {
-            if (!nextIndexSet.has(Number(card.dataset.tableIndex)) && card.parentNode === carousel) {
+            if (!nextIndexSet.has(Number(card.dataset.itemIndex)) && card.parentNode === carousel) {
                 card.remove();
             }
         }, 260);
     });
 
-    renderedWheelCenterIndex = currentTableIndex;
+    renderedWheelCenterIndex = currentIndex;
+}
+
+async function enterCollectionMode() {
+    if (windowName !== "table") {
+        return;
+    }
+
+    stopAttractMode();
+    try {
+        const metadata = await vpin.call("get_collections_metadata");
+        collectionEntries = Array.isArray(metadata) ? metadata.filter((entry) => entry && entry.name) : [];
+    } catch (error) {
+        vpin.call("console_out", `Unable to load collections: ${error.message || error}`);
+        collectionEntries = [];
+    }
+
+    if (!collectionEntries.length) {
+        return;
+    }
+
+    wheelMode = "collections";
+    currentCollectionIndex = 0;
+    renderedWheelCenterIndex = null;
+    document.body.classList.add("collection-wheel-mode");
+    updateCollectionMeta(getCollectionDisplayData(currentCollectionIndex));
+    renderWheelCarousel({ animate: false });
+}
+
+async function selectCurrentCollection() {
+    const collection = collectionEntries[currentCollectionIndex];
+    if (!collection?.name) {
+        return;
+    }
+
+    wheelMode = "tables";
+    document.body.classList.remove("collection-wheel-mode");
+    stopAttractMode();
+    await vpin.call("set_tables_by_collection", collection.name);
+    await vpin.getTableData();
+    currentTableIndex = 0;
+    renderedWheelCenterIndex = null;
+    setImage();
+    vpin.sendMessageToAllWindows({
+        type: "TableDataChange",
+        index: currentTableIndex,
+        collection: collection.name
+    });
+    markUserActivity(false);
+}
+
+function leaveCollectionMode() {
+    wheelMode = "tables";
+    document.body.classList.remove("collection-wheel-mode");
+    renderedWheelCenterIndex = null;
+    setImage();
+    markUserActivity(false);
 }
 
 async function receiveEvent(message) {
@@ -718,6 +848,9 @@ async function receiveEvent(message) {
     await vpin.handleEvent(message);
 
     if (message.type === "TableIndexUpdate") {
+        if (isCollectionMode()) {
+            leaveCollectionMode();
+        }
         currentTableIndex = message.index;
         setImage();
         if (!attractModeActive) {
@@ -750,6 +883,9 @@ async function receiveEvent(message) {
             markUserActivity(false);
         }
     } else if (message.type === "TableDataChange") {
+        if (isCollectionMode()) {
+            leaveCollectionMode();
+        }
         currentTableIndex = message.index;
         setImage();
         if (!attractModeActive) {
@@ -765,6 +901,12 @@ async function handleInput(input) {
 
     switch (input) {
     case "joyleft":
+        if (isCollectionMode()) {
+            currentCollectionIndex = wrapIndex(currentCollectionIndex - 1, collectionEntries.length);
+            updateCollectionMeta(getCollectionDisplayData(currentCollectionIndex));
+            renderWheelCarousel();
+            break;
+        }
         currentTableIndex = wrapIndex(currentTableIndex - 1, vpin.tableData.length);
         setImage();
         vpin.sendMessageToAllWindows({
@@ -773,6 +915,12 @@ async function handleInput(input) {
         });
         break;
     case "joyright":
+        if (isCollectionMode()) {
+            currentCollectionIndex = wrapIndex(currentCollectionIndex + 1, collectionEntries.length);
+            updateCollectionMeta(getCollectionDisplayData(currentCollectionIndex));
+            renderWheelCarousel();
+            break;
+        }
         currentTableIndex = wrapIndex(currentTableIndex + 1, vpin.tableData.length);
         setImage();
         vpin.sendMessageToAllWindows({
@@ -781,6 +929,10 @@ async function handleInput(input) {
         });
         break;
     case "joyselect":
+        if (isCollectionMode()) {
+            await selectCurrentCollection();
+            break;
+        }
         stopAttractMode();
         vpin.sendMessageToAllWindows({ type: "TableLaunching" });
         vpin.stopTableAudio({ immediate: true });
@@ -788,14 +940,26 @@ async function handleInput(input) {
         await vpin.launchTable(currentTableIndex);
         vpin.call("console_out", "FADEOUT done");
         break;
-    case "joymenu":
     case "joyback":
+        if (isCollectionMode()) {
+            leaveCollectionMode();
+        } else {
+            await enterCollectionMode();
+        }
+        break;
+    case "joymenu":
     default:
         break;
     }
 }
 
 function setImage() {
+    if (isCollectionMode()) {
+        updateCollectionMeta(getCollectionDisplayData(currentCollectionIndex));
+        renderWheelCarousel();
+        return;
+    }
+
     if (!vpin.tableData || vpin.tableData.length === 0) {
         cleanupMediaElement(document.querySelector("#fsMediaContainer .media-frame.is-active, #fsMedia"));
         return;
