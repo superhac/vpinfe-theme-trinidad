@@ -259,6 +259,22 @@ function hideRemoteLaunchOverlay() {
     }
 }
 
+function showTableLoadingOverlay() {
+    const overlay = document.getElementById("table-loading-overlay");
+    if (overlay) {
+        overlay.classList.add("is-visible");
+        overlay.setAttribute("aria-hidden", "false");
+    }
+}
+
+function hideTableLoadingOverlay() {
+    const overlay = document.getElementById("table-loading-overlay");
+    if (overlay) {
+        overlay.classList.remove("is-visible");
+        overlay.setAttribute("aria-hidden", "true");
+    }
+}
+
 function hasUsableMedia(url) {
     return Boolean(url) && !String(url).includes("file_missing");
 }
@@ -858,11 +874,15 @@ async function receiveEvent(message) {
         }
     } else if (message.type === "TableLaunching") {
         stopAttractMode();
+        showTableLoadingOverlay();
         if (windowName === "table") {
             vpin.stopTableAudio();
         }
         await fadeOut();
+    } else if (message.type === "TableRunning") {
+        hideTableLoadingOverlay();
     } else if (message.type === "TableLaunchComplete") {
+        hideTableLoadingOverlay();
         fadeInScreen();
         if (windowName === "table") {
             vpin.playTableAudio(currentTableIndex);
@@ -876,6 +896,7 @@ async function receiveEvent(message) {
         }
         await fadeOut();
     } else if (message.type === "RemoteLaunchComplete") {
+        hideTableLoadingOverlay();
         hideRemoteLaunchOverlay();
         fadeInScreen();
         if (windowName === "table") {
@@ -935,6 +956,7 @@ async function handleInput(input) {
         }
         stopAttractMode();
         vpin.sendMessageToAllWindows({ type: "TableLaunching" });
+        showTableLoadingOverlay();
         vpin.stopTableAudio({ immediate: true });
         await fadeOut();
         await vpin.launchTable(currentTableIndex);

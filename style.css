@@ -123,6 +123,28 @@ body:not(.window-table) #fadeContainer .media-frame .fullscreen {
   pointer-events: none;
 }
 
+#table-loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease;
+}
+
+#table-loading-overlay.is-visible {
+  opacity: 1;
+}
+
+.table-loading-spinner {
+  width: min(34vw, 34vh, 500px);
+  height: min(34vw, 34vh, 500px);
+  object-fit: contain;
+}
+
 #menu-overlay-container > iframe,
 #menu-overlay-container > * {
   flex: 0 0 auto;
