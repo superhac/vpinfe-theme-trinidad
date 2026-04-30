@@ -334,7 +334,7 @@ body.window-table .wheel-card img {
 body.window-table .table-meta-panel {
   position: absolute;
   right: -11.5vh;
-  bottom: calc(32vh - 8vw);
+  bottom: calc(35vh - 8vw);
   width: 70vh;
   min-height: 16vw;
   padding: 1.9vh 1.7vw 1.9vh 1.5vw;

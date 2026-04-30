@@ -21,6 +21,9 @@ vpin.ready.then(async () => {
     windowName = await vpin.call("get_my_window_name");
     document.body.classList.add(`window-${windowName}`);
 
+    const themeConfig = await vpin.call("get_theme_config") || {};
+    const startInCollectionSelection = Boolean(themeConfig?.startCollectionSelection);
+
     if (windowName === "table") {
         vpin.enableCoreAudio(true);
         vpin.setAudioOptions({
@@ -31,11 +34,19 @@ vpin.ready.then(async () => {
     }
 
     applyMenuRotation();
-    setImage();
     if (windowName === "table") {
         vpin.registerInputHandler(handleInput);
         setupAttractMode();
         markUserActivity();
+    }
+
+    if (windowName === "table" && startInCollectionSelection) {
+        await enterCollectionMode();
+        if (!isCollectionMode()) {
+            setImage();
+        }
+    } else {
+        setImage();
     }
 });
 
@@ -825,7 +836,7 @@ async function enterCollectionMode() {
     currentCollectionIndex = 0;
     renderedWheelCenterIndex = null;
     document.body.classList.add("collection-wheel-mode");
-    updateCollectionMeta(getCollectionDisplayData(currentCollectionIndex));
+    setImage();
     renderWheelCarousel({ animate: false });
 }
 
@@ -977,8 +988,11 @@ async function handleInput(input) {
 
 function setImage() {
     if (isCollectionMode()) {
-        updateCollectionMeta(getCollectionDisplayData(currentCollectionIndex));
-        renderWheelCarousel();
+        renderFullscreenMedia("img/collection_background.png", null);
+        if (windowName === "table") {
+            updateCollectionMeta(getCollectionDisplayData(currentCollectionIndex));
+            renderWheelCarousel();
+        }
         return;
     }
 
