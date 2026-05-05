@@ -102,8 +102,10 @@ body:not(.window-table) #fadeContainer .media-frame .fullscreen {
 
 :root {
   --menu-rotation: 0deg;
-  --menu-width: 50vw;
-  --menu-height: 50vh;
+  --menu-width: 84vw;
+  --menu-height: 84vh;
+  --collection-menu-width: 50vw;
+  --collection-menu-height: 50vh;
 }
 
 #overlay-root {
@@ -153,8 +155,6 @@ body:not(.window-table) #fadeContainer .media-frame .fullscreen {
 
 #menu-frame,
 #collection-menu-frame {
-  width: var(--menu-width);
-  height: var(--menu-height);
   border: none;
   border-radius: 1rem;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
@@ -163,10 +163,19 @@ body:not(.window-table) #fadeContainer .media-frame .fullscreen {
   transform-origin: center center;
 }
 
+#collection-menu-frame {
+  width: var(--collection-menu-width);
+  height: var(--collection-menu-height);
+}
+
 #menu-frame {
   position: absolute;
   top: 50%;
   left: 50%;
+  width: min(var(--menu-width), calc(var(--menu-height) * 1.5));
+  height: auto;
+  max-height: var(--menu-height);
+  aspect-ratio: 3 / 2;
   transform: translate(-50%, -50%);
 }
 

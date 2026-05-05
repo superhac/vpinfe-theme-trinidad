@@ -97,8 +97,10 @@ function applyMenuRotation() {
 
     const contentSwapAxes = Math.abs(rotation) === 90 || Math.abs(rotation) === 270;
     const menuSwapAxes = Math.abs(menuRotation) === 90 || Math.abs(menuRotation) === 270;
-    root.style.setProperty("--menu-width", menuSwapAxes ? "50vh" : "50vw");
-    root.style.setProperty("--menu-height", menuSwapAxes ? "50vw" : "50vh");
+    root.style.setProperty("--menu-width", menuSwapAxes ? "84vh" : "84vw");
+    root.style.setProperty("--menu-height", menuSwapAxes ? "84vw" : "84vh");
+    root.style.setProperty("--collection-menu-width", menuSwapAxes ? "50vh" : "50vw");
+    root.style.setProperty("--collection-menu-height", menuSwapAxes ? "50vw" : "50vh");
 
     if (windowName !== "table") {
         return;
