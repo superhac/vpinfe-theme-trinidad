@@ -5,6 +5,7 @@ let vpinPlayRatingToken = 0;
 let attractIdleTimer = null;
 let attractAdvanceTimer = null;
 let attractModeActive = false;
+let attractSuspended = false;
 let wheelMode = "tables";
 let collectionEntries = [];
 let currentCollectionIndex = 0;
@@ -166,6 +167,7 @@ function isCollectionMode() {
 function shouldPauseAttractMode() {
     return (
         windowName !== "table" ||
+        attractSuspended ||
         isCollectionMode() ||
         !vpin.tableData ||
         vpin.tableData.length < 2 ||
@@ -220,6 +222,10 @@ function markUserActivity(stopAttract = true) {
     if (windowName !== "table") {
         return;
     }
+    if (attractSuspended) {
+        clearAttractTimers();
+        return;
+    }
 
     clearAttractTimers();
     if (stopAttract) {
@@ -237,6 +243,16 @@ function setupAttractMode() {
             markUserActivity();
         }, { passive: true });
     });
+}
+
+function suspendAttractMode() {
+    attractSuspended = true;
+    stopAttractMode();
+}
+
+function resumeAttractModeIdleCountdown() {
+    attractSuspended = false;
+    markUserActivity(false);
 }
 
 async function fadeOut() {
@@ -886,7 +902,7 @@ async function receiveEvent(message) {
             markUserActivity(false);
         }
     } else if (message.type === "TableLaunching") {
-        stopAttractMode();
+        suspendAttractMode();
         showTableLoadingOverlay();
         if (windowName === "table") {
             vpin.stopTableAudio();
@@ -899,11 +915,11 @@ async function receiveEvent(message) {
         fadeInScreen();
         if (windowName === "table") {
             vpin.playTableAudio(currentTableIndex);
-            markUserActivity(false);
+            resumeAttractModeIdleCountdown();
         }
     } else if (message.type === "RemoteLaunching") {
         showRemoteLaunchOverlay(message.table_name);
-        stopAttractMode();
+        suspendAttractMode();
         if (windowName === "table") {
             vpin.stopTableAudio();
         }
@@ -914,7 +930,7 @@ async function receiveEvent(message) {
         fadeInScreen();
         if (windowName === "table") {
             vpin.playTableAudio(currentTableIndex);
-            markUserActivity(false);
+            resumeAttractModeIdleCountdown();
         }
     } else if (message.type === "TableDataChange") {
         if (isCollectionMode()) {
@@ -967,7 +983,7 @@ async function handleInput(input) {
             await selectCurrentCollection();
             break;
         }
-        stopAttractMode();
+        suspendAttractMode();
         vpin.sendMessageToAllWindows({ type: "TableLaunching" });
         showTableLoadingOverlay();
         vpin.stopTableAudio({ immediate: true });
