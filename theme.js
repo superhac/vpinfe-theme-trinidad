@@ -26,6 +26,7 @@ vpin.ready.then(async () => {
     const startInCollectionSelection = Boolean(themeConfig?.startCollectionSelection);
 
     if (windowName === "table") {
+        vpin.enableCorePaging(false);
         vpin.enableCoreAudio(true);
         vpin.setAudioOptions({
             maxVolume: 0.8,
@@ -946,6 +947,17 @@ async function receiveEvent(message) {
 
 window.receiveEvent = receiveEvent;
 
+// Core stops paging the wheel once the theme takes it, so ask it where a page lands.
+async function pageTables(direction) {
+    const index = await vpin.getPageIndex(direction, currentTableIndex);
+    if (typeof index !== "number" || index < 0 || index === currentTableIndex) {
+        return;
+    }
+    currentTableIndex = index;
+    setImage();
+    vpin.sendMessageToAllWindows({ type: "TableIndexUpdate", index: currentTableIndex });
+}
+
 async function handleInput(input) {
     markUserActivity();
 
@@ -996,6 +1008,26 @@ async function handleInput(input) {
             leaveCollectionMode();
         } else {
             await enterCollectionMode();
+        }
+        break;
+    case "joyup":
+    case "joypageup":
+        if (isCollectionMode()) {
+            currentCollectionIndex = wrapIndex(currentCollectionIndex - 1, collectionEntries.length);
+            updateCollectionMeta(getCollectionDisplayData(currentCollectionIndex));
+            renderWheelCarousel();
+        } else {
+            await pageTables("prev");
+        }
+        break;
+    case "joydown":
+    case "joypagedown":
+        if (isCollectionMode()) {
+            currentCollectionIndex = wrapIndex(currentCollectionIndex + 1, collectionEntries.length);
+            updateCollectionMeta(getCollectionDisplayData(currentCollectionIndex));
+            renderWheelCarousel();
+        } else {
+            await pageTables("next");
         }
         break;
     case "joymenu":
