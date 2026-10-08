@@ -1,3 +1,8 @@
+:root {
+  --vw: 1vw;
+  --vh: 1vh;
+}
+
 @font-face {
   font-family: "RocketCommandExpanded";
   src: url("fonts/RocketCommandExpanded-DYA5m.otf") format("opentype");
@@ -33,8 +38,8 @@ body.window-table {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: calc(100 * var(--vw));
+  height: calc(100 * var(--vh));
   background-color: black;
   transition: opacity 4.5s ease-in-out;
   opacity: 1;
@@ -47,8 +52,8 @@ body.window-table {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: calc(100 * var(--vw));
+  height: calc(100 * var(--vh));
   background-color: black;
   background-size: fill;
   background-repeat: no-repeat;
@@ -58,8 +63,8 @@ body.window-table {
 
 img.fullscreen,
 video.fullscreen {
-  width: 100vw;
-  height: 100vh;
+  width: calc(100 * var(--vw));
+  height: calc(100 * var(--vh));
   object-fit: fill;
   display: block;
   background-color: black;
@@ -85,8 +90,8 @@ body:not(.window-table) #fadeContainer .media-frame .fullscreen {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: calc(100 * var(--vw));
+  height: calc(100 * var(--vh));
   background-color: black;
   background-size: fill;
   background-repeat: no-repeat;
@@ -102,10 +107,10 @@ body:not(.window-table) #fadeContainer .media-frame .fullscreen {
 
 :root {
   --menu-rotation: 0deg;
-  --menu-width: 84vw;
-  --menu-height: 84vh;
-  --collection-menu-width: 50vw;
-  --collection-menu-height: 50vh;
+  --menu-width: calc(84 * var(--vw));
+  --menu-height: calc(84 * var(--vh));
+  --collection-menu-width: calc(50 * var(--vw));
+  --collection-menu-height: calc(50 * var(--vh));
 }
 
 #overlay-root {
@@ -142,8 +147,8 @@ body:not(.window-table) #fadeContainer .media-frame .fullscreen {
 }
 
 .table-loading-spinner {
-  width: min(34vw, 34vh, 500px);
-  height: min(34vw, 34vh, 500px);
+  width: min(calc(34 * var(--vw)), calc(34 * var(--vh)), 500px);
+  height: min(calc(34 * var(--vw)), calc(34 * var(--vh)), 500px);
   object-fit: contain;
 }
 
@@ -220,8 +225,8 @@ body.window-table .table-media-layer::after {
 
 body.window-table .wheel-overlay {
   position: absolute;
-  inset: 0.8vh 2.5vw auto 2.5vw;
-  height: 34vh;
+  inset: calc(0.8 * var(--vh)) calc(2.5 * var(--vw)) auto calc(2.5 * var(--vw));
+  height: calc(34 * var(--vh));
   pointer-events: none;
   z-index: 2;
 }
@@ -241,9 +246,9 @@ body.window-table .wheel-card {
   position: absolute;
   left: 50%;
   top: 0;
-  width: 43.2vw;
-  max-width: 52vh;
-  min-width: 38vh;
+  width: calc(43.2 * var(--vw));
+  max-width: calc(52 * var(--vh));
+  min-width: calc(38 * var(--vh));
   aspect-ratio: 2.5 / 1;
   transform:
     translate(-50%, -50%)
@@ -255,15 +260,15 @@ body.window-table .wheel-card {
     transform 320ms ease,
     opacity 320ms ease,
     filter 320ms ease;
-  filter: drop-shadow(0 0.8vh 1.8vh rgba(0, 0, 0, 0.7));
+  filter: drop-shadow(0 calc(0.8 * var(--vh)) calc(1.8 * var(--vh)) rgba(0, 0, 0, 0.7));
   z-index: 1;
   will-change: transform, opacity;
 }
 
 body.window-table .wheel-card.is-selected {
   filter:
-    drop-shadow(0 0 1.8vh rgba(255, 245, 196, 1))
-    drop-shadow(0 1.1vh 2vh rgba(0, 0, 0, 0.8));
+    drop-shadow(0 0 calc(1.8 * var(--vh)) rgba(255, 245, 196, 1))
+    drop-shadow(0 calc(1.1 * var(--vh)) calc(2 * var(--vh)) rgba(0, 0, 0, 0.8));
   z-index: 3;
 }
 
@@ -277,15 +282,15 @@ body.window-table .wheel-card-fallback {
 
 body.window-table.collection-wheel-mode .wheel-card {
   aspect-ratio: 1 / 1;
-  width: 23vw;
-  max-width: 30vh;
-  min-width: 20vh;
+  width: calc(23 * var(--vw));
+  max-width: calc(30 * var(--vh));
+  min-width: calc(20 * var(--vh));
 }
 
 body.window-table.collection-wheel-mode .wheel-card.is-selected {
   filter:
-    drop-shadow(0 0 2.2vh rgba(47, 210, 255, 1))
-    drop-shadow(0 1.1vh 2vh rgba(0, 0, 0, 0.8));
+    drop-shadow(0 0 calc(2.2 * var(--vh)) rgba(47, 210, 255, 1))
+    drop-shadow(0 calc(1.1 * var(--vh)) calc(2 * var(--vh)) rgba(0, 0, 0, 0.8));
 }
 
 body.window-table.collection-wheel-mode .wheel-card-shell {
@@ -302,13 +307,13 @@ body.window-table.collection-wheel-mode .wheel-card img {
 }
 
 body.window-table.collection-wheel-mode .wheel-card-fallback {
-  border: 0.2vh solid rgba(47, 210, 255, 0.72);
-  border-radius: 1.4vh;
+  border: calc(0.2 * var(--vh)) solid rgba(47, 210, 255, 0.72);
+  border-radius: calc(1.4 * var(--vh));
   background: rgba(3, 9, 18, 0.84);
   color: #e8fbff;
-  padding: 1.4vh;
+  padding: calc(1.4 * var(--vh));
   text-align: center;
-  box-shadow: 0 0 2vh rgba(47, 210, 255, 0.24);
+  box-shadow: 0 0 calc(2 * var(--vh)) rgba(47, 210, 255, 0.24);
 }
 
 body.window-table .wheel-card-shell {
@@ -325,10 +330,10 @@ body.window-table .wheel-card-shell {
 body.window-table .wheel-card-fallback {
   display: grid;
   place-items: center;
-  padding: 0.5vh 0.7vw;
+  padding: calc(0.5 * var(--vh)) calc(0.7 * var(--vw));
   box-sizing: border-box;
   color: rgba(248, 250, 255, 0.95);
-  font-size: 1.2vh;
+  font-size: calc(1.2 * var(--vh));
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -342,24 +347,24 @@ body.window-table .wheel-card img {
 
 body.window-table .table-meta-panel {
   position: absolute;
-  right: -11.5vh;
-  bottom: calc(35vh - 8vw);
-  width: 70vh;
-  min-height: 16vw;
-  padding: 1.9vh 1.7vw 1.9vh 1.5vw;
+  right: calc(-11.5 * var(--vh));
+  bottom: calc(calc(35 * var(--vh)) - calc(8 * var(--vw)));
+  width: calc(70 * var(--vh));
+  min-height: calc(16 * var(--vw));
+  padding: calc(1.9 * var(--vh)) calc(1.7 * var(--vw)) calc(1.9 * var(--vh)) calc(1.5 * var(--vw));
   box-sizing: border-box;
-  border: 0.28vh solid rgba(118, 224, 255, 0.85);
-  border-radius: 3vh;
+  border: calc(0.28 * var(--vh)) solid rgba(118, 224, 255, 0.85);
+  border-radius: calc(3 * var(--vh));
   background:
     radial-gradient(circle at top left, rgba(86, 188, 255, 0.14) 0%, rgba(86, 188, 255, 0) 32%),
     linear-gradient(180deg, rgba(12, 20, 32, 0.76) 0%, rgba(5, 10, 18, 0.92) 100%);
-  backdrop-filter: blur(0.5vh);
+  backdrop-filter: blur(calc(0.5 * var(--vh)));
   box-shadow:
-    0 0 0.35vh rgba(171, 244, 255, 0.92),
-    0 0 1.2vh rgba(78, 199, 255, 0.82),
-    0 0 2.6vh rgba(33, 127, 255, 0.34),
-    inset 0 0 0.24vh rgba(215, 251, 255, 0.78),
-    inset 0 0 1.5vh rgba(43, 118, 190, 0.2);
+    0 0 calc(0.35 * var(--vh)) rgba(171, 244, 255, 0.92),
+    0 0 calc(1.2 * var(--vh)) rgba(78, 199, 255, 0.82),
+    0 0 calc(2.6 * var(--vh)) rgba(33, 127, 255, 0.34),
+    inset 0 0 calc(0.24 * var(--vh)) rgba(215, 251, 255, 0.78),
+    inset 0 0 calc(1.5 * var(--vh)) rgba(43, 118, 190, 0.2);
   color: #f5f7fb;
   z-index: 3;
   transform: rotate(-90deg);
@@ -373,7 +378,7 @@ body.window-table .table-meta-panel.is-entering {
 
 @keyframes table-meta-slide-in {
   from {
-    transform: translateY(48vh) rotate(-90deg);
+    transform: translateY(calc(48 * var(--vh))) rotate(-90deg);
     opacity: 0;
   }
 
@@ -384,9 +389,9 @@ body.window-table .table-meta-panel.is-entering {
 }
 
 body.window-table .table-meta-kicker {
-  margin-bottom: 0.8vh;
+  margin-bottom: calc(0.8 * var(--vh));
   color: rgba(173, 195, 223, 0.92);
-  font-size: 1.35vh;
+  font-size: calc(1.35 * var(--vh));
   font-weight: 700;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -395,17 +400,17 @@ body.window-table .table-meta-kicker {
 body.window-table .table-meta-title {
   margin: 0;
   font-family: "RocketCommandExpanded", "Trebuchet MS", Arial, sans-serif;
-  font-size: clamp(1.55vh, 1.25vw, 2.3vh);
+  font-size: clamp(calc(1.55 * var(--vh)), calc(1.25 * var(--vw)), calc(2.3 * var(--vh)));
   line-height: 0.95;
   text-transform: uppercase;
-  text-shadow: 0 0.25vh 1.2vh rgba(0, 0, 0, 0.45);
+  text-shadow: 0 calc(0.25 * var(--vh)) calc(1.2 * var(--vh)) rgba(0, 0, 0, 0.45);
 }
 
 body.window-table .table-meta-authors {
-  margin-top: 1vh;
+  margin-top: calc(1 * var(--vh));
   font-family: "RocketCommandGradient", "Trebuchet MS", Arial, sans-serif;
   color: rgba(207, 217, 235, 0.88);
-  font-size: 1.5vh;
+  font-size: calc(1.5 * var(--vh));
   font-weight: 600;
   letter-spacing: 0.04em;
   line-height: 1.25;
@@ -415,11 +420,11 @@ body.window-table .table-meta-line {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.7vh 0.7vw;
-  margin-top: 1.35vh;
+  gap: calc(0.7 * var(--vh)) calc(0.7 * var(--vw));
+  margin-top: calc(1.35 * var(--vh));
   font-family: "RocketCommandGradient", "Trebuchet MS", Arial, sans-serif;
   color: rgba(225, 232, 244, 0.92);
-  font-size: 1.65vh;
+  font-size: calc(1.65 * var(--vh));
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -428,35 +433,35 @@ body.window-table .table-meta-line {
 body.window-table .table-meta-stats {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.2vh 1vw;
-  margin-top: 1.8vh;
+  gap: calc(1.2 * var(--vh)) calc(1 * var(--vw));
+  margin-top: calc(1.8 * var(--vh));
 }
 
 body.window-table .table-meta-stat {
   display: flex;
   flex-direction: column;
-  gap: 0.45vh;
-  padding: 0.9vh 0.8vw;
-  border-radius: 1.3vh;
+  gap: calc(0.45 * var(--vh));
+  padding: calc(0.9 * var(--vh)) calc(0.8 * var(--vw));
+  border-radius: calc(1.3 * var(--vh));
   background: rgba(9, 18, 30, 0.28);
-  box-shadow: inset 0 0 0 0.12vh rgba(179, 242, 255, 0.16);
+  box-shadow: inset 0 0 0 calc(0.12 * var(--vh)) rgba(179, 242, 255, 0.16);
 }
 
 body.window-table .table-meta-stat-label {
   color: #dff6ff;
   font-family: "RocketCommandExpanded", "Trebuchet MS", Arial, sans-serif;
-  font-size: 1.1vh;
+  font-size: calc(1.1 * var(--vh));
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   text-shadow:
-    0 0 0.25vh rgba(223, 246, 255, 0.9),
-    0 0 0.7vh rgba(111, 227, 255, 0.4);
+    0 0 calc(0.25 * var(--vh)) rgba(223, 246, 255, 0.9),
+    0 0 calc(0.7 * var(--vh)) rgba(111, 227, 255, 0.4);
 }
 
 body.window-table .table-meta-stat-value {
   color: rgba(244, 249, 255, 0.96);
-  font-size: 1.7vh;
+  font-size: calc(1.7 * var(--vh));
   font-weight: 700;
   letter-spacing: 0.04em;
 }
@@ -465,24 +470,24 @@ body.window-table .table-meta-stat-value {
   font-family: "RocketCommandExpanded", "Trebuchet MS", Arial, sans-serif;
   color: #ffe14f;
   text-shadow:
-    0 0 0.3vh rgba(255, 237, 145, 0.95),
-    0 0 0.9vh rgba(255, 212, 61, 0.65);
+    0 0 calc(0.3 * var(--vh)) rgba(255, 237, 145, 0.95),
+    0 0 calc(0.9 * var(--vh)) rgba(255, 212, 61, 0.65);
 }
 
 #tableVPinPlayRating.table-meta-stat-value {
   font-family: "RocketCommandExpanded", "Trebuchet MS", Arial, sans-serif;
   color: #ffe14f;
   text-shadow:
-    0 0 0.3vh rgba(255, 237, 145, 0.95),
-    0 0 0.9vh rgba(255, 212, 61, 0.65);
+    0 0 calc(0.3 * var(--vh)) rgba(255, 237, 145, 0.95),
+    0 0 calc(0.9 * var(--vh)) rgba(255, 212, 61, 0.65);
 }
 
 body.window-table .table-meta-counter-strip {
   position: relative;
   width: 100%;
   aspect-ratio: 1306 / 272;
-  min-height: 14vh;
-  margin-top: 1.6vh;
+  min-height: calc(14 * var(--vh));
+  margin-top: calc(1.6 * var(--vh));
   background: url("img/runtime-startcount.png") center / contain no-repeat;
 }
 
@@ -494,7 +499,7 @@ body.window-table .table-meta-counter {
   white-space: nowrap;
   text-align: center;
   font-family: "Roboto-Bold", "Trebuchet MS", Arial, sans-serif;
-  font-size: 2.45vh;
+  font-size: calc(2.45 * var(--vh));
   font-weight: 700;
   letter-spacing: 0.02em;
   line-height: 1;
@@ -506,8 +511,8 @@ body.window-table .table-meta-counter-runtime {
   transform: translate(-50%, -50%);
   color: #9be8ff;
   text-shadow:
-    0 0 0.45vh rgba(155, 232, 255, 0.95),
-    0 0 1.25vh rgba(89, 208, 255, 0.55);
+    0 0 calc(0.45 * var(--vh)) rgba(155, 232, 255, 0.95),
+    0 0 calc(1.25 * var(--vh)) rgba(89, 208, 255, 0.55);
 }
 
 body.window-table .table-meta-counter-starts {
@@ -516,21 +521,21 @@ body.window-table .table-meta-counter-starts {
   transform: translate(-50%, -50%);
   color: #ffd84d;
   text-shadow:
-    0 0 0.45vh rgba(255, 216, 77, 0.95),
-    0 0 1.25vh rgba(255, 140, 54, 0.42);
+    0 0 calc(0.45 * var(--vh)) rgba(255, 216, 77, 0.95),
+    0 0 calc(1.25 * var(--vh)) rgba(255, 140, 54, 0.42);
 }
 
 body.window-table .table-meta-separator {
-  width: 0.55vh;
-  height: 0.55vh;
+  width: calc(0.55 * var(--vh));
+  height: calc(0.55 * var(--vh));
   border-radius: 50%;
   background: rgba(190, 204, 229, 0.82);
 }
 
 body.window-table .table-meta-subline {
-  margin-top: 1.6vh;
+  margin-top: calc(1.6 * var(--vh));
   color: rgba(194, 205, 224, 0.78);
-  font-size: 1.35vh;
+  font-size: calc(1.35 * var(--vh));
   line-height: 1.35;
   word-break: break-word;
 }

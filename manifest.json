@@ -1,10 +1,10 @@
 {
   "name": "Trinidad",
-  "version": "1.7.1",
+  "version": "1.7.2",
   "author": "superhac",
   "description": "A cab theme with arc'ed wheel.  Has attract mode.",
   "preview_image": "preview.png",
   "supported_screens": 3,
   "type": "cab",
-  "change_log": "Fix collection wheel paging"
+  "change_log": "Fix the table screen and menus on a portrait display set to orientation portrait"
 }
