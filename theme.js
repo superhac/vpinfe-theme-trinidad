@@ -86,10 +86,23 @@ function ensureMenuOverlayContainer() {
     return container;
 }
 
+let frameUnits = false;
+
 function applyMenuRotation() {
-    const rotation = Number(vpin.tableRotation) || 0;
+    const configuredRotation = Number(vpin.tableRotation) || 0;
+    // Orientation portrait with rotation 0 means the display is already portrait, as
+    // Trifecta and Revolution read it. The page is drawn for a landscape frame, so turn the
+    // frame into the window the same way a rotation of 90 does. The window shape only
+    // confirms the setting, so a landscape window is left alone.
+    const nativePortrait = windowName === "table"
+        && ((configuredRotation % 360) + 360) % 360 === 0
+        && String(vpin.tableOrientation || "").toLowerCase() === "portrait"
+        && window.innerHeight > window.innerWidth;
+    const rotation = nativePortrait ? 90 : configuredRotation;
     const normalizedRotation = ((rotation % 360) + 360) % 360;
+    // The window is already upright, so the menus are drawn upright in it too.
     const menuRotation =
+        nativePortrait ? 0 :
         normalizedRotation === 90 ? 90 :
         normalizedRotation === 180 ? 90 :
         normalizedRotation === 270 ? 270 :
@@ -101,8 +114,10 @@ function applyMenuRotation() {
     const menuSwapAxes = Math.abs(menuRotation) === 90 || Math.abs(menuRotation) === 270;
     root.style.setProperty("--menu-width", menuSwapAxes ? "84vh" : "84vw");
     root.style.setProperty("--menu-height", menuSwapAxes ? "84vw" : "84vh");
-    root.style.setProperty("--collection-menu-width", menuSwapAxes ? "50vh" : "50vw");
-    root.style.setProperty("--collection-menu-height", menuSwapAxes ? "50vw" : "50vh");
+    // The collection menu is drawn 8:5, so an upright one in a portrait window is
+    // as wide as the main menu rather than half the window.
+    root.style.setProperty("--collection-menu-width", nativePortrait ? "84vw" : menuSwapAxes ? "50vh" : "50vw");
+    root.style.setProperty("--collection-menu-height", nativePortrait ? "52.5vw" : menuSwapAxes ? "50vw" : "50vh");
 
     if (windowName !== "table") {
         return;
@@ -110,6 +125,18 @@ function applyMenuRotation() {
 
     const rotatedWidth = contentSwapAxes ? "100vh" : "100vw";
     const rotatedHeight = contentSwapAxes ? "100vw" : "100vh";
+
+    // The page is drawn for a landscape frame. When the window is already portrait and the
+    // frame is turned into it, size everything against the frame, not the window.
+    const fade = document.getElementById("fadeContainer");
+    frameUnits = Boolean(fade) && contentSwapAxes
+        && window.innerHeight > window.innerWidth
+        && CSS.supports("width", "1cqw");
+    if (frameUnits) {
+        fade.style.containerType = "size";
+        fade.style.setProperty("--vw", "1cqw");
+        fade.style.setProperty("--vh", "1cqh");
+    }
 
     [document.getElementById("fadeContainer"), document.getElementById("remote-launch-overlay")]
         .filter(Boolean)
@@ -616,8 +643,11 @@ function updateVPinPlayRating(index) {
 
 function getWheelLayout(offset) {
     const normalized = offset / 3;
-    const x = normalized * window.innerWidth * 0.43;
-    const y = window.innerHeight * (0.165 - (1 - Math.cos(normalized * Math.PI / 2)) * 0.05);
+    const fade = frameUnits ? document.getElementById("fadeContainer") : null;
+    const frameWidth = fade ? fade.clientWidth : window.innerWidth;
+    const frameHeight = fade ? fade.clientHeight : window.innerHeight;
+    const x = normalized * frameWidth * 0.43;
+    const y = frameHeight * (0.165 - (1 - Math.cos(normalized * Math.PI / 2)) * 0.05);
     const rotation = -Math.abs(normalized) * 28;
     const scale = offset === 0 ? 1.18 : 1.02 - Math.abs(offset) * 0.08;
     const opacity = Math.max(0.18, 1 - Math.abs(offset) * 0.14);
